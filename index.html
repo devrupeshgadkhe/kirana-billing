@@ -75,8 +75,7 @@ h2{
 }
 
 input,
-button,
-select{
+button{
     width:100%;
     padding:12px;
     border-radius:10px;
@@ -112,13 +111,6 @@ button{
     margin-top:10px;
 }
 
-.total{
-    margin-top:10px;
-    font-size:18px;
-    font-weight:bold;
-    color:#0f9d58;
-}
-
 .status{
     display:inline-block;
     padding:5px 10px;
@@ -133,6 +125,13 @@ button{
 .completed{
     background:#c8f7d1;
     color:#0b7a2b;
+}
+
+.total{
+    margin-top:10px;
+    font-size:18px;
+    font-weight:bold;
+    color:#0f9d58;
 }
 
 .loading{
@@ -156,16 +155,27 @@ button{
 
 <div class="container">
 
-    <h1 class="title">Kirana Billing System</h1>
+    <h1 class="title">
+        Kirana Billing System
+    </h1>
 
     <div class="tabs">
-        <button id="shopBtn" class="active" onclick="showScreen('shopkeeper')">
+
+        <button id="shopBtn"
+                class="active"
+                onclick="showScreen('shopkeeper')">
+
             Shopkeeper
+
         </button>
 
-        <button id="accBtn" onclick="showScreen('accountant')">
+        <button id="accBtn"
+                onclick="showScreen('accountant')">
+
             Accountant
+
         </button>
+
     </div>
 
     <!-- SHOPKEEPER -->
@@ -218,9 +228,11 @@ button{
             <h2>Pending Bills</h2>
 
             <div id="pendingContainer">
+
                 <div class="loading">
                     Loading...
                 </div>
+
             </div>
 
         </div>
@@ -259,7 +271,8 @@ function showScreen(screen){
         document.getElementById("shopBtn")
             .classList.add("active");
 
-    }else{
+    }
+    else{
 
         document.getElementById("accountant")
             .classList.add("active");
@@ -281,7 +294,7 @@ function addItem(){
 
         <input type="text"
                class="itemName"
-               placeholder="Item Name (Example: Sugar 10 kg)">
+               placeholder="Item Name Example: Sugar 10kg">
 
     `;
 
@@ -295,10 +308,12 @@ async function submitBill(){
     try{
 
         const customerName =
-            document.getElementById("customerName").value;
+            document.getElementById("customerName")
+            .value.trim();
 
         const billDate =
-            document.getElementById("billDate").value;
+            document.getElementById("billDate")
+            .value;
 
         const itemInputs =
             document.querySelectorAll(".itemName");
@@ -311,7 +326,7 @@ async function submitBill(){
 
                 items.push({
 
-                    itemName:input.value,
+                    itemName:input.value.trim(),
                     price:0
 
                 });
@@ -329,7 +344,7 @@ async function submitBill(){
 
         if(items.length === 0){
 
-            alert("Add at least one item");
+            alert("Add items");
             return;
 
         }
@@ -356,17 +371,21 @@ async function submitBill(){
                 },
 
                 body:JSON.stringify(payload)
+
             }
 
         );
 
         const result = await response.json();
 
+        console.log(result);
+
         if(result.success){
 
-            alert("Bill Submitted Successfully");
+            alert("Bill Submitted");
 
-            document.getElementById("customerName").value = "";
+            document.getElementById("customerName")
+                .value = "";
 
             document.getElementById("itemsContainer")
                 .innerHTML = "";
@@ -375,16 +394,19 @@ async function submitBill(){
 
             loadReports();
 
-        }else{
+        }
+        else{
 
-            alert("Failed To Submit");
+            alert(result.message || "Submission Failed");
 
         }
 
-    }catch(error){
+    }
+    catch(error){
 
         console.log(error);
-        alert("Submission Failed");
+
+        alert("Error submitting bill");
 
     }
 
@@ -406,12 +428,14 @@ async function loadPendingBills(){
 
         const result = await response.json();
 
+        console.log(result);
+
         const container =
             document.getElementById("pendingContainer");
 
         container.innerHTML = "";
 
-        if(result.data.length === 0){
+        if(!result.data || result.data.length === 0){
 
             container.innerHTML =
                 "<div class='loading'>No Pending Bills</div>";
@@ -430,7 +454,9 @@ async function loadPendingBills(){
 
                     <div class="item-box">
 
-                        <div>${item.itemName}</div>
+                        <div>
+                            ${item.itemName}
+                        </div>
 
                         <input type="number"
                                placeholder="Enter Price"
@@ -448,9 +474,13 @@ async function loadPendingBills(){
 
                 <div class="bill-card">
 
-                    <h3>${bill.customerName}</h3>
+                    <h3>
+                        ${bill.customerName}
+                    </h3>
 
-                    <div>Date: ${bill.billDate}</div>
+                    <div>
+                        Date: ${bill.billDate}
+                    </div>
 
                     <div class="status">
                         Pending
@@ -458,8 +488,11 @@ async function loadPendingBills(){
 
                     ${itemsHtml}
 
-                    <button onclick="completeBill('${bill.billId}')">
+                    <button
+                        onclick="completeBill('${bill.billId}')">
+
                         Complete Bill
+
                     </button>
 
                 </div>
@@ -468,7 +501,8 @@ async function loadPendingBills(){
 
         });
 
-    }catch(error){
+    }
+    catch(error){
 
         console.log(error);
 
@@ -518,6 +552,7 @@ async function completeBill(billId){
                 },
 
                 body:JSON.stringify(payload)
+
             }
 
         );
@@ -533,12 +568,18 @@ async function completeBill(billId){
             loadReports();
 
         }
+        else{
 
-    }catch(error){
+            alert("Update Failed");
+
+        }
+
+    }
+    catch(error){
 
         console.log(error);
 
-        alert("Update Failed");
+        alert("Error Updating Bill");
 
     }
 
@@ -570,7 +611,7 @@ async function loadReports(){
 
         container.innerHTML = "";
 
-        if(result.data.length === 0){
+        if(!result.data || result.data.length === 0){
 
             container.innerHTML =
                 "<div class='loading'>No Reports Found</div>";
@@ -585,9 +626,13 @@ async function loadReports(){
 
                 <div class="bill-card">
 
-                    <h3>${bill.customerName}</h3>
+                    <h3>
+                        ${bill.customerName}
+                    </h3>
 
-                    <div>Date: ${bill.billDate}</div>
+                    <div>
+                        Date: ${bill.billDate}
+                    </div>
 
                     <div class="total">
                         ₹ ${bill.total}
@@ -613,7 +658,8 @@ async function loadReports(){
 
         });
 
-    }catch(error){
+    }
+    catch(error){
 
         console.log(error);
 
