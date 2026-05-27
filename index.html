@@ -71,7 +71,6 @@ body{
 h2{
     color:#0f4c81;
     margin-bottom:12px;
-    font-size:20px;
 }
 
 input,
@@ -111,6 +110,13 @@ button{
     margin-top:10px;
 }
 
+.total{
+    margin-top:10px;
+    font-size:18px;
+    font-weight:bold;
+    color:#0f9d58;
+}
+
 .status{
     display:inline-block;
     padding:5px 10px;
@@ -125,13 +131,6 @@ button{
 .completed{
     background:#c8f7d1;
     color:#0b7a2b;
-}
-
-.total{
-    margin-top:10px;
-    font-size:18px;
-    font-weight:bold;
-    color:#0f9d58;
 }
 
 .loading{
@@ -246,9 +245,6 @@ button{
 const API_URL =
 "https://script.google.com/macros/s/AKfycbzO2wXtX7T29s3csdGlEr_FENPTIZm9O1AguO6kfN7g8ckiwxnad8rkHSj_0UPamDv6/exec";
 
-const PROXY =
-"https://corsproxy.io/?";
-
 function showScreen(screen){
 
     document.getElementById("shopkeeper")
@@ -294,7 +290,7 @@ function addItem(){
 
         <input type="text"
                class="itemName"
-               placeholder="Item Name Example: Sugar 10kg">
+               placeholder="Item Example: Sugar 10kg">
 
     `;
 
@@ -359,22 +355,17 @@ async function submitBill(){
 
         };
 
-        const response = await fetch(
+        const response = await fetch(API_URL,{
 
-            PROXY + encodeURIComponent(API_URL),
+            method:"POST",
 
-            {
-                method:"POST",
+            headers:{
+                "Content-Type":"text/plain;charset=utf-8"
+            },
 
-                headers:{
-                    "Content-Type":"text/plain;charset=utf-8"
-                },
+            body:JSON.stringify(payload)
 
-                body:JSON.stringify(payload)
-
-            }
-
-        );
+        });
 
         const result = await response.json();
 
@@ -416,13 +407,10 @@ async function loadPendingBills(){
 
     try{
 
-        const url =
-            API_URL +
-            "?action=getPendingBills&assignedTo=Accountant";
-
         const response = await fetch(
 
-            PROXY + encodeURIComponent(url)
+            API_URL +
+            "?action=getPendingBills&assignedTo=Accountant"
 
         );
 
@@ -540,22 +528,17 @@ async function completeBill(billId){
 
         };
 
-        const response = await fetch(
+        const response = await fetch(API_URL,{
 
-            PROXY + encodeURIComponent(API_URL),
+            method:"POST",
 
-            {
-                method:"POST",
+            headers:{
+                "Content-Type":"text/plain;charset=utf-8"
+            },
 
-                headers:{
-                    "Content-Type":"text/plain;charset=utf-8"
-                },
+            body:JSON.stringify(payload)
 
-                body:JSON.stringify(payload)
-
-            }
-
-        );
+        });
 
         const result = await response.json();
 
@@ -593,14 +576,11 @@ async function loadReports(){
             document.getElementById("searchCustomer")
             .value;
 
-        const url =
-            API_URL +
-            "?action=searchBills&customerName=" +
-            encodeURIComponent(search);
-
         const response = await fetch(
 
-            PROXY + encodeURIComponent(url)
+            API_URL +
+            "?action=searchBills&customerName=" +
+            encodeURIComponent(search)
 
         );
 
