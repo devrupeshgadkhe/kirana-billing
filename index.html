@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kirana Billing Workflow</title>
+<title>Kirana Billing System</title>
 
 <style>
 
@@ -159,8 +159,13 @@ button{
     <h1 class="title">Kirana Billing System</h1>
 
     <div class="tabs">
-        <button id="shopBtn" class="active" onclick="showScreen('shopkeeper')">Shopkeeper</button>
-        <button id="accBtn" onclick="showScreen('accountant')">Accountant</button>
+        <button id="shopBtn" class="active" onclick="showScreen('shopkeeper')">
+            Shopkeeper
+        </button>
+
+        <button id="accBtn" onclick="showScreen('accountant')">
+            Accountant
+        </button>
     </div>
 
     <!-- SHOPKEEPER -->
@@ -173,17 +178,19 @@ button{
 
             <input type="date" id="billDate">
 
-            <input type="text" id="customerName" placeholder="Customer Name">
+            <input type="text"
+                   id="customerName"
+                   placeholder="Customer Name">
 
             <div id="itemsContainer"></div>
 
-            <button onclick="addItem()">+ Add Item</button>
+            <button onclick="addItem()">
+                + Add Item
+            </button>
 
-            <select id="assignUser">
-                <option value="Accountant">Accountant</option>
-            </select>
-
-            <button onclick="submitBill()">Submit Bill</button>
+            <button onclick="submitBill()">
+                Submit Bill
+            </button>
 
         </div>
 
@@ -191,12 +198,10 @@ button{
 
             <h2>Reports</h2>
 
-            <input
-                type="text"
-                id="searchCustomer"
-                placeholder="Search Customer"
-                onkeyup="loadReports()"
-            >
+            <input type="text"
+                   id="searchCustomer"
+                   placeholder="Search Customer"
+                   onkeyup="loadReports()">
 
             <div id="reportsContainer"></div>
 
@@ -213,7 +218,9 @@ button{
             <h2>Pending Bills</h2>
 
             <div id="pendingContainer">
-                <div class="loading">Loading...</div>
+                <div class="loading">
+                    Loading...
+                </div>
             </div>
 
         </div>
@@ -224,27 +231,44 @@ button{
 
 <script>
 
-const API_URL = "https://script.google.com/macros/s/AKfycbzO2wXtX7T29s3csdGlEr_FENPTIZm9O1AguO6kfN7g8ckiwxnad8rkHSj_0UPamDv6/exec";
+const API_URL =
+"https://script.google.com/macros/s/AKfycbzO2wXtX7T29s3csdGlEr_FENPTIZm9O1AguO6kfN7g8ckiwxnad8rkHSj_0UPamDv6/exec";
+
+const PROXY =
+"https://corsproxy.io/?";
 
 function showScreen(screen){
 
-    document.getElementById("shopkeeper").classList.remove("active");
-    document.getElementById("accountant").classList.remove("active");
+    document.getElementById("shopkeeper")
+        .classList.remove("active");
 
-    document.getElementById("shopBtn").classList.remove("active");
-    document.getElementById("accBtn").classList.remove("active");
+    document.getElementById("accountant")
+        .classList.remove("active");
+
+    document.getElementById("shopBtn")
+        .classList.remove("active");
+
+    document.getElementById("accBtn")
+        .classList.remove("active");
 
     if(screen === "shopkeeper"){
 
-        document.getElementById("shopkeeper").classList.add("active");
-        document.getElementById("shopBtn").classList.add("active");
+        document.getElementById("shopkeeper")
+            .classList.add("active");
+
+        document.getElementById("shopBtn")
+            .classList.add("active");
 
     }else{
 
-        document.getElementById("accountant").classList.add("active");
-        document.getElementById("accBtn").classList.add("active");
+        document.getElementById("accountant")
+            .classList.add("active");
+
+        document.getElementById("accBtn")
+            .classList.add("active");
 
         loadPendingBills();
+
     }
 
 }
@@ -254,14 +278,15 @@ function addItem(){
     const div = document.createElement("div");
 
     div.innerHTML = `
-        <input
-            type="text"
-            class="itemName"
-            placeholder="Item Name (Example: Sugar 10 kg)"
-        >
+
+        <input type="text"
+               class="itemName"
+               placeholder="Item Name (Example: Sugar 10 kg)">
+
     `;
 
-    document.getElementById("itemsContainer").appendChild(div);
+    document.getElementById("itemsContainer")
+        .appendChild(div);
 
 }
 
@@ -285,8 +310,10 @@ async function submitBill(){
             if(input.value.trim() !== ""){
 
                 items.push({
-                    itemName: input.value,
-                    price: 0
+
+                    itemName:input.value,
+                    price:0
+
                 });
 
             }
@@ -317,15 +344,21 @@ async function submitBill(){
 
         };
 
-        const response = await fetch(API_URL,{
+        const response = await fetch(
 
-            method:"POST",
-            headers:{
-                "Content-Type":"text/plain;charset=utf-8"
-            },
-            body:JSON.stringify(payload)
+            PROXY + encodeURIComponent(API_URL),
 
-        });
+            {
+                method:"POST",
+
+                headers:{
+                    "Content-Type":"text/plain;charset=utf-8"
+                },
+
+                body:JSON.stringify(payload)
+            }
+
+        );
 
         const result = await response.json();
 
@@ -334,7 +367,9 @@ async function submitBill(){
             alert("Bill Submitted Successfully");
 
             document.getElementById("customerName").value = "";
-            document.getElementById("itemsContainer").innerHTML = "";
+
+            document.getElementById("itemsContainer")
+                .innerHTML = "";
 
             addItem();
 
@@ -342,7 +377,7 @@ async function submitBill(){
 
         }else{
 
-            alert("Error submitting bill");
+            alert("Failed To Submit");
 
         }
 
@@ -359,9 +394,14 @@ async function loadPendingBills(){
 
     try{
 
-        const response = await fetch(
+        const url =
             API_URL +
-            "?action=getPendingBills&assignedTo=Accountant"
+            "?action=getPendingBills&assignedTo=Accountant";
+
+        const response = await fetch(
+
+            PROXY + encodeURIComponent(url)
+
         );
 
         const result = await response.json();
@@ -387,19 +427,19 @@ async function loadPendingBills(){
             bill.items.forEach(item => {
 
                 itemsHtml += `
+
                     <div class="item-box">
 
                         <div>${item.itemName}</div>
 
-                        <input
-                            type="number"
-                            placeholder="Enter Price"
-                            data-bill="${bill.billId}"
-                            data-item="${item.itemName}"
-                            value="${item.price || ''}"
-                        >
+                        <input type="number"
+                               placeholder="Enter Price"
+                               data-bill="${bill.billId}"
+                               data-item="${item.itemName}"
+                               value="${item.price || ''}">
 
                     </div>
+
                 `;
 
             });
@@ -418,9 +458,7 @@ async function loadPendingBills(){
 
                     ${itemsHtml}
 
-                    <button
-                        onclick="completeBill('${bill.billId}')"
-                    >
+                    <button onclick="completeBill('${bill.billId}')">
                         Complete Bill
                     </button>
 
@@ -468,15 +506,21 @@ async function completeBill(billId){
 
         };
 
-        const response = await fetch(API_URL,{
+        const response = await fetch(
 
-            method:"POST",
-            headers:{
-                "Content-Type":"text/plain;charset=utf-8"
-            },
-            body:JSON.stringify(payload)
+            PROXY + encodeURIComponent(API_URL),
 
-        });
+            {
+                method:"POST",
+
+                headers:{
+                    "Content-Type":"text/plain;charset=utf-8"
+                },
+
+                body:JSON.stringify(payload)
+            }
+
+        );
 
         const result = await response.json();
 
@@ -485,6 +529,7 @@ async function completeBill(billId){
             alert("Bill Completed");
 
             loadPendingBills();
+
             loadReports();
 
         }
@@ -492,6 +537,7 @@ async function completeBill(billId){
     }catch(error){
 
         console.log(error);
+
         alert("Update Failed");
 
     }
@@ -503,12 +549,18 @@ async function loadReports(){
     try{
 
         const search =
-            document.getElementById("searchCustomer").value;
+            document.getElementById("searchCustomer")
+            .value;
 
-        const response = await fetch(
+        const url =
             API_URL +
             "?action=searchBills&customerName=" +
-            encodeURIComponent(search)
+            encodeURIComponent(search);
+
+        const response = await fetch(
+
+            PROXY + encodeURIComponent(url)
+
         );
 
         const result = await response.json();
